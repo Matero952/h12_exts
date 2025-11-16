@@ -1,0 +1,103 @@
+##########################
+# Python
+##########################
+
+# Bytecode
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments (anywhere)
+**/.venv/
+**/venv/
+**/env/
+**/ENV/
+
+# Packaging
+**/build/
+**/dist/
+**/eggs/
+**/.eggs/
+**/*.egg-info/
+**/*.egg
+MANIFEST
+
+# C extensions
+*.so
+*.dylib
+*.dll
+*.pyd
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+
+##########################
+# Testing & Coverage
+##########################
+**/.tox/
+**/.nox/
+**/.coverage
+.coverage.*
+coverage.xml
+**/htmlcov/
+**/.pytest_cache/
+**/.cache/
+
+
+##########################
+# Jupyter
+##########################
+**/.ipynb_checkpoints/
+
+
+##########################
+# Linters & Type Checkers
+##########################
+**/.mypy_cache/
+**/.pyre/
+**/.ruff_cache/
+
+
+##########################
+# VS Code
+##########################
+**/.vscode/
+**/.vscode-test/
+
+
+##########################
+# Environment / secrets
+##########################
+.env
+.env.*
+*.env
+*.ini
+
+
+##########################
+# OS files
+##########################
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Linux backups
+*~
+
+
+##########################
+# Editor junk
+##########################
+*.swp
+*.swo
+*.bak
+*.orig
+
