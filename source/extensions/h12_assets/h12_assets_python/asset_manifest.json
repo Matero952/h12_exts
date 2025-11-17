@@ -1,0 +1,61 @@
+{
+    "assets": [
+        {
+            "name": "chainsaw",
+            "mtl_file": "chainsaw_free.mtl",
+            "obj_file": "chainsaw_free.obj",
+            "usd_file": "chainsaw_free.usd",
+            "tga_file": "chainsaw.tga"
+        },
+        {
+            "name": "door",
+            "mtl_file": "door.mtl",
+            "obj_file": "door.obj",
+            "usdc_file": "door.usdc"
+        },
+        {
+            "name": "drill",
+            "step_file": "DEWALT.STEP",
+            "usdc_file": "DEWALT.usdc"
+        },
+        {
+            "name": "hammer",
+            "obj_file": "Hammer.obj"
+        },
+        {
+            "name": "scissor",
+            "mtl_file": "scissor.mtl",
+            "obj_file": "scissor.obj",
+            "usd_file": "scissor.usd"
+        },
+        {
+            "name": "screwdriver",
+            "mtl_file": "Screwdriver_obj.mtl",
+            "obj_file": "Screwdriver_obj.obj",
+            "usd_file": "Screwdriver_obj.usd"
+        },
+        {
+            "name": "shovel",
+            "color_file": "BaseColor.png",
+            "metallic_file": "Metallic.png",
+            "normal_file": "Normal.png",
+            "roughness_file": "Roughness.png",
+            "usdc_file": "SnowShovel-FBX.usdc",
+            "fbx_file": "SnowShovel-FBX.fbx"
+        },
+        {
+            "name": "wrench",
+            "obj_file": "Wrench_OBJ.obj",
+            "usd_file": "Wrench_OBJ.usd"
+        }
+    ]
+
+
+
+
+
+
+
+
+
+}
