@@ -1,21 +1,6 @@
-# SPDX-FileCopyrightText: Copyright (c) 2022-2025 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
-# SPDX-License-Identifier: Apache-2.0
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-# http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-
 import asyncio
 import gc
-
+import sys
 import omni
 import omni.kit.commands
 import omni.physx as _physx
@@ -26,9 +11,15 @@ from isaacsim.gui.components.element_wrappers import ScrollingWindow
 from isaacsim.gui.components.menu import MenuItemDescription
 from omni.kit.menu.utils import add_menu_items, remove_menu_items
 from omni.usd import StageEventType
+import carb
+print(sys.path)
+sys.path.append("/root/h12_exts/source/extensions/h12_assets/h12_assets_python")
+print(sys.path)
+
+# from load_assets_in_stage import *
 
 from .global_variables import EXTENSION_DESCRIPTION, EXTENSION_TITLE
-from .ui_builder import UIBuilder
+# from .ui_builder import UIBuilder
 
 """
 This file serves as a basic template for the standard boilerplate operations
@@ -76,7 +67,7 @@ class Extension(omni.ext.IExt):
         add_menu_items(self._menu_items, EXTENSION_TITLE)
 
         # Filled in with User Functions
-        self.ui_builder = UIBuilder()
+        # self.ui_builder = UIBuilder()
 
         # Events
         self._usd_context = omni.usd.get_context()
@@ -84,6 +75,34 @@ class Extension(omni.ext.IExt):
         self._physx_subscription = None
         self._stage_event_sub = None
         self._timeline = omni.timeline.get_timeline_interface()
+        print(f"H12 EXTENSION STARTED UP")
+        carb_settings = carb.settings.get_settings()
+        assert carb_settings is not None
+        # carb.settings.get_settings().set_int("/rtx/debugMaterialType", 0)
+        # # carb.settings.get_settings().set_int()
+        # # carb_settings = carb.settings.get_settings()
+        # # assert carb_settings is not None
+        # #set execMode to performance so that shit doesnt fucking break my computer:
+        # carb_settings.set("/rtx/post/dlss/execMode", 0)
+        # #should boost performance:
+        # carb_settings.set("/rtx/post/aa/op", 3)
+        # #dont even think this can run on my computer but just set it to false anyways:
+        # carb_settings.set("/rtx-transient/dlssg/enabled", False)
+        # # carb_settings.set("/rtx/raytracing/showLights", 2)
+        # carb_settings.set_int("/rtx/debugMaterialType", 0)
+        # from omni.isaac.core.utils.stage import add_reference_to_stage
+
+        # import carb 
+        
+        carb_settings.set("/log/debugConsoleLevel", "Debug")  # verbose"|"info"|"warning"|"error"|"fatal"
+        carb_settings.set("/log/enabled", False)
+        carb_settings.set("/log/outputStreamLevel", "Debug")
+        carb_settings.set("/log/fileLogLevel", "Debug")
+        from load_assets_in_stage import spawn_asset
+        spawn_asset()
+        # import isaacsim.core.utils.stage as stage_utils
+        # stage_utils.add_reference_to_stage(usd_path="/root/h12_sim_assets/assets/chainsaw/mini_chainsaw_scan_lowpoly.usd", prim_path="/World/mini_chainsaw_scan_lowpoly")
+
 
     def on_shutdown(self):
         self._models = {}
@@ -94,7 +113,8 @@ class Extension(omni.ext.IExt):
 
         if self._window:
             self._window = None
-        self.ui_builder.cleanup()
+        # self.ui_builder.cleanup()
+        print("H12 EXTENSION SHUTDOWN")
         gc.collect()
 
     def _on_window(self, visible):
@@ -106,32 +126,32 @@ class Extension(omni.ext.IExt):
             stream = self._timeline.get_timeline_event_stream()
             self._timeline_event_sub = stream.create_subscription_to_pop(self._on_timeline_event)
 
-            self._build_ui()
+            # self._build_ui()
         else:
             self._usd_context = None
             self._stage_event_sub = None
             self._timeline_event_sub = None
-            self.ui_builder.cleanup()
+            # self.ui_builder.cleanup()
 
-    def _build_ui(self):
-        with self._window.frame:
-            with ui.VStack(spacing=5, height=0):
-                self._build_extension_ui()
+    # def _build_ui(self):
+    #     with self._window.frame:
+    #         with ui.VStack(spacing=5, height=0):
+    #             self._build_extension_ui()
 
-        async def dock_window():
-            await omni.kit.app.get_app().next_update_async()
+    #     async def dock_window():
+    #         await omni.kit.app.get_app().next_update_async()
 
-            def dock(space, name, location, pos=0.5):
-                window = omni.ui.Workspace.get_window(name)
-                if window and space:
-                    window.dock_in(space, location, pos)
-                return window
+    #         def dock(space, name, location, pos=0.5):
+    #             window = omni.ui.Workspace.get_window(name)
+    #             if window and space:
+    #                 window.dock_in(space, location, pos)
+    #             return window
 
-            tgt = ui.Workspace.get_window("Viewport")
-            dock(tgt, EXTENSION_TITLE, omni.ui.DockPosition.LEFT, 0.33)
-            await omni.kit.app.get_app().next_update_async()
+    #         tgt = ui.Workspace.get_window("Viewport")
+    #         dock(tgt, EXTENSION_TITLE, omni.ui.DockPosition.LEFT, 0.33)
+    #         await omni.kit.app.get_app().next_update_async()
 
-        self._task = asyncio.ensure_future(dock_window())
+    #     self._task = asyncio.ensure_future(dock_window())
 
     #################################################################
     # Functions below this point call user functions
@@ -139,7 +159,7 @@ class Extension(omni.ext.IExt):
 
     def _menu_callback(self):
         self._window.visible = not self._window.visible
-        self.ui_builder.on_menu_callback()
+        # self.ui_builder.on_menu_callback()
 
     def _on_timeline_event(self, event):
         if event.type == int(omni.timeline.TimelineEventType.PLAY):
@@ -148,19 +168,21 @@ class Extension(omni.ext.IExt):
         elif event.type == int(omni.timeline.TimelineEventType.STOP):
             self._physx_subscription = None
 
-        self.ui_builder.on_timeline_event(event)
+        # self.ui_builder.on_timeline_event(event)
 
     def _on_physics_step(self, step):
-        self.ui_builder.on_physics_step(step)
+        # self.ui_builder.on_physics_step(step)
+        pass
 
     def _on_stage_event(self, event):
         if event.type == int(StageEventType.OPENED) or event.type == int(StageEventType.CLOSED):
             # stage was opened or closed, cleanup
             self._physx_subscription = None
-            self.ui_builder.cleanup()
+            # self.ui_builder.cleanup()
 
-        self.ui_builder.on_stage_event(event)
+        # self.ui_builder.on_stage_event(event)
 
     def _build_extension_ui(self):
         # Call user function for building UI
-        self.ui_builder.build_ui()
+        # self.ui_builder.build_ui()
+        pass

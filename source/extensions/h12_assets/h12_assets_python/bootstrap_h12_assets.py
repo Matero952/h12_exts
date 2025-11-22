@@ -11,19 +11,39 @@ def bootstrap_assets():
         assets_env_var += "/"
     assets_exist = h_ensure_assets_exist(assets_env_var)
 
-
 def h_ensure_assets_exist(assets_env_path: str):
-    with open('asset_manifest.json', 'r') as f:
+    print(os.path.exists(assets_env_path + "generate_asset_manifest.py"))
+    if not os.path.exists(assets_env_path + "asset_manifest.json"):
+        result = subprocess.run(['python3', assets_env_path + "generate_asset_manifest.py"])
+    print(os.path.exists(assets_env_path + "asset_manifest.json"))
+    breakpoint()
+        # try:
+    # breakpoint()
+    # print(os.path.exists)
+    # if not os.path.exists(assets_env_path + "asset_manifest.json"):
+    #     try:
+    #         print("FFF")
+    #         result = subprocess.run(['python3', assets_env_path + "generate_asset_manifest.py"])
+    #         print("EEE")
+    #         # print(result.stderr)
+    #         # print(result.stdout)
+    #         print(os.path.exists(assets_env_path + "asset_manifest.json"))
+    #     except Exception as e:
+    #         print(e)
+    #         raise AssertionError("Please download the git repo first, im not gonna do it for you")
+    with open(assets_env_path + "asset_manifest.json", 'r') as f:
         data = json.load(f)
         for asset in data['assets']:
-            file_base = assets_env_path + "assets/" + asset['name'] + '/'
+            file_base = assets_env_path + "assets/" + asset + '/'
+            print(asset)
             # print(f"{file_base=}")
-            for field in asset:
+            for field in data['assets'][asset]:
+                    print(field)
                 # print(f"{asset[field]=}")
-                if field != "name":
-                    if "tga" in field:
-                        file_base += "textures/"
-                    file = file_base + asset[field]
+                # if field != "name":
+                #     if "tga" in field:
+                #         file_base += "textures/"
+                    file = file_base + data['assets'][asset][field]
                     try:
                         assert os.path.exists(file), f"{file} does not exist."
                     except AssertionError:
