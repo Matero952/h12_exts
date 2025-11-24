@@ -19,7 +19,7 @@ print(sys.path)
 # from load_assets_in_stage import *
 
 from .global_variables import EXTENSION_DESCRIPTION, EXTENSION_TITLE
-# from .ui_builder import UIBuilder
+from .ui import UIBuilder
 
 """
 This file serves as a basic template for the standard boilerplate operations
@@ -46,6 +46,7 @@ class Extension(omni.ext.IExt):
 
         self.ext_id = ext_id
         self._usd_context = omni.usd.get_context()
+        self.ui_builder = UIBuilder()
 
         # Build Window
         self._window = ScrollingWindow(
@@ -67,7 +68,7 @@ class Extension(omni.ext.IExt):
         add_menu_items(self._menu_items, EXTENSION_TITLE)
 
         # Filled in with User Functions
-        # self.ui_builder = UIBuilder()
+        
 
         # Events
         self._usd_context = omni.usd.get_context()
@@ -98,11 +99,34 @@ class Extension(omni.ext.IExt):
         carb_settings.set("/log/enabled", False)
         carb_settings.set("/log/outputStreamLevel", "Debug")
         carb_settings.set("/log/fileLogLevel", "Debug")
-        from load_assets_in_stage import spawn_asset
-        spawn_asset()
+        # # from isaaclab.sim.converters import *
+        # from load_assets_in_stage import spawn_asset
+        # spawn_asset()
         # import isaacsim.core.utils.stage as stage_utils
         # stage_utils.add_reference_to_stage(usd_path="/root/h12_sim_assets/assets/chainsaw/mini_chainsaw_scan_lowpoly.usd", prim_path="/World/mini_chainsaw_scan_lowpoly")
-
+        # from ui import _get_object_names
+        # _get_object_names()
+        # import isaaclab.sim as sim_utils
+        # from pxr import Usd, UsdPhysics, UsdGeom
+        # stage = Usd.Stage.Open("/root/h12_sim_assets/assets/drill/low-poly-drill.usdc")
+        # root_prim = stage.GetDefaultPrim()
+        # if not root_prim:
+        #     print(stage)
+        # print(root_prim)
+        # breakpoint()
+        # UsdPhysics.RigidBodyAPI.Apply(root_prim)
+        # UsdPhysics.CollisionAPI.Apply(root_prim)
+        # UsdPhysics.MassAPI.Apply(root_prim)
+        # UsdPhysics.ArticulationRootAPI.Apply(root_prim)
+        # # rootd_prim.SetInstanceable(True)
+        # stage.GetRootLayer().Save()
+        # print(f"Ok i did that shit")
+        #     # root_prim = stage.GetPrimAtPath()
+        # prim = sim_utils.spawn_from_usd(
+        # prim_path="/World/t22est",
+        # cfg=sim_utils.UsdFileCfg(usd_path="/root/h12_sim_assets/assets/wrench/adjustable_wrench.usd")
+        # )
+        # print("tried to add")
 
     def on_shutdown(self):
         self._models = {}
@@ -113,7 +137,7 @@ class Extension(omni.ext.IExt):
 
         if self._window:
             self._window = None
-        # self.ui_builder.cleanup()
+        self.ui_builder.cleanup()
         print("H12 EXTENSION SHUTDOWN")
         gc.collect()
 
@@ -126,32 +150,32 @@ class Extension(omni.ext.IExt):
             stream = self._timeline.get_timeline_event_stream()
             self._timeline_event_sub = stream.create_subscription_to_pop(self._on_timeline_event)
 
-            # self._build_ui()
+            self._build_ui()
         else:
             self._usd_context = None
             self._stage_event_sub = None
             self._timeline_event_sub = None
-            # self.ui_builder.cleanup()
+            self.ui_builder.cleanup()
 
-    # def _build_ui(self):
-    #     with self._window.frame:
-    #         with ui.VStack(spacing=5, height=0):
-    #             self._build_extension_ui()
+    def _build_ui(self):
+        with self._window.frame:
+            with ui.VStack(spacing=5, height=0):
+                self._build_extension_ui()
 
-    #     async def dock_window():
-    #         await omni.kit.app.get_app().next_update_async()
+        def dock_window():
+            omni.kit.app.get_app().next_update_async()
 
-    #         def dock(space, name, location, pos=0.5):
-    #             window = omni.ui.Workspace.get_window(name)
-    #             if window and space:
-    #                 window.dock_in(space, location, pos)
-    #             return window
+            def dock(space, name, location, pos=0.5):
+                window = omni.ui.Workspace.get_window(name)
+                if window and space:
+                    window.dock_in(space, location, pos)
+                return window
 
-    #         tgt = ui.Workspace.get_window("Viewport")
-    #         dock(tgt, EXTENSION_TITLE, omni.ui.DockPosition.LEFT, 0.33)
-    #         await omni.kit.app.get_app().next_update_async()
+            tgt = ui.Workspace.get_window("Viewport")
+            dock(tgt, EXTENSION_TITLE, omni.ui.DockPosition.LEFT, 0.33)
+            omni.kit.app.get_app().next_update_async()
 
-    #     self._task = asyncio.ensure_future(dock_window())
+        self._task = asyncio.ensure_future(dock_window())
 
     #################################################################
     # Functions below this point call user functions
@@ -159,7 +183,7 @@ class Extension(omni.ext.IExt):
 
     def _menu_callback(self):
         self._window.visible = not self._window.visible
-        # self.ui_builder.on_menu_callback()
+        self.ui_builder.on_menu_callback()
 
     def _on_timeline_event(self, event):
         if event.type == int(omni.timeline.TimelineEventType.PLAY):
@@ -168,21 +192,22 @@ class Extension(omni.ext.IExt):
         elif event.type == int(omni.timeline.TimelineEventType.STOP):
             self._physx_subscription = None
 
-        # self.ui_builder.on_timeline_event(event)
+        self.ui_builder.on_timeline_event(event)
 
     def _on_physics_step(self, step):
-        # self.ui_builder.on_physics_step(step)
+        self.ui_builder.on_physics_step(step)
         pass
 
     def _on_stage_event(self, event):
         if event.type == int(StageEventType.OPENED) or event.type == int(StageEventType.CLOSED):
             # stage was opened or closed, cleanup
             self._physx_subscription = None
-            # self.ui_builder.cleanup()
+            self.ui_builder.cleanup()
 
-        # self.ui_builder.on_stage_event(event)
+        self.ui_builder.on_stage_event(event)
 
     def _build_extension_ui(self):
         # Call user function for building UI
-        # self.ui_builder.build_ui()
+        self.ui_builder.build_ui()
+        # self.ui_builder.object_dropdown.repopulate()
         pass
